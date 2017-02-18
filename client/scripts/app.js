@@ -1,7 +1,8 @@
 var app = {};
 
 app.init = function () {
-
+  $('#main').find('.username').on('click', app.handleUsernameClick());
+  $('#send .submit').on('submit', app.handleSubmit());
 };
 app.server = 'http://parse.sfm6.hackreactor.com/';
 
@@ -35,7 +36,7 @@ app.fetch = function () {
     },
     error: function (data) {
     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-      console.error('chatterbox: Failed to receive messages', data);
+      consoe.error('chatterbox: Failed to receive messages', data);
     }
   });
 
@@ -62,18 +63,16 @@ app.renderRoom = function (room) {
   $roomSelect.append('<option value=' + room + '>' + room + '</option>');
 };
 
-app.handleUserNameClick = function () {
+
+app.handleUsernameClick = function () {
   // if clicked, traverse dom to find clicked class
-  $('#main').find('.username').trigger('click');
+
   // add friend to clicked class
 };
 
+app.handleSubmit = function () {
 
-
-
-
-
-
+};
 /*
 
 <div id="chats">
