@@ -3,6 +3,9 @@ var app = {};
 app.init = function () {
   $('#main').find('.username').on('click', app.handleUsernameClick());
   $('#send .submit').on('submit', app.handleSubmit());
+  // var roomForm = ?????
+  $('#addRoom').on('click', app.renderRoom(prompt('What room would you like to add?')));
+  
 };
 app.server = 'http://parse.sfm6.hackreactor.com/';
 
@@ -36,7 +39,7 @@ app.fetch = function () {
     },
     error: function (data) {
     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-      consoe.error('chatterbox: Failed to receive messages', data);
+      console.error('chatterbox: Failed to receive messages', data);
     }
   });
 
@@ -57,6 +60,10 @@ app.renderMessage = function (message) {
   $chats.append('<p>' + message.text + '</p>');
   console.log($chats);
 };
+
+// Allow users to create rooms and enter existing rooms - 
+// Rooms are defined by the .roomname property of messages, 
+// so you'll need to filter them somehow.
 
 app.renderRoom = function (room) {
   var $roomSelect = $('#roomSelect');
