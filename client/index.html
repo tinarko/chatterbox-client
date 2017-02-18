@@ -20,8 +20,13 @@
       }
     </script>
     <!-- your scripts -->
-    <script src="env/config.js"></script>
+    <script src="images/env/config.js"></script>
     <script src="scripts/app.js"></script>
+    <script>
+            $ ( document ).ready (function () {
+              app.init();
+            });
+    </script>
   </head>
   <body>
     <div id="main">
@@ -33,14 +38,14 @@
       <div id="rooms">
         Room:
         <select id="roomSelect">
+          <option id="lobby">lobby</option>
           <option id="addRoom">Add Room...
-           <!--  <form method="get">
-              <input type="text"/>
-            </form> -->
           </option>
         </select>
       </div>
-    
+      <div id ="clearChat">
+        <button id="clearbutton" type="button">Clear Messages</button>
+      </div>
       <form action="#" id="send" method="post">
         <input type="text" name="message" id="message"/>
         <input type="submit" name="submit" class="submit"/>
