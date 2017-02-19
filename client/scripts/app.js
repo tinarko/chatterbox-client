@@ -1,19 +1,27 @@
 
 
 var app = {
-  server: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages'
+  server: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
+  username: 'person',
+  roomname: 'lobby',
+  lastMessageid: 0,
+  friends: {},
+  messages: []
 };
 
 app.init = function () {
-  $('#main').find('.username').on('click', app.handleUsernameClick());
-  $('#send .submit').on('submit', app.handleSubmit());
+  app.username = window.location.search.substr(10);
+  $('#main').find('.username').on('click', app.handleUsernameClick);
+  $('#send').on('submit', app.handleSubmit);
   $('form').submit(function(event) {
-    event.preventDefault();
+    
   });
+
   app.fetch();
+  
   var set;
   // var roomForm = ?????
-  $('#addRoom').on('submit', app.renderRoom(prompt('What room would you like to add?')));
+  $('#addRoom').on('submit', app.renderRoom);
   //somehow append to #addRoom
   // $('#addRoom').onclick(app.renderRoom(prompt('What room would you like to add?')));
   $('clearbutton').on('click', app.clearMessages(set));
@@ -29,6 +37,7 @@ app.send = function (message) {
     contentType: 'application/json',
     success: function (data) {
       console.log(data);
+      app.fetch();
     },
     error: function (data) {
     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -43,10 +52,9 @@ app.fetch = function () {
   // This is the url you should use to communicate with the parse API server.
     url: app.server,
     type: 'GET',
-    data: JSON.stringify(),
+    data: { order: '-createdAt' },
     contentType: 'application/json',
     success: function (data) {
-      console.log(data);
       app.renderMessage(data.results);
       set = data.results;
     },
@@ -64,11 +72,20 @@ app.clearMessages = function (message) {
 
 app.renderMessage = function (message) {
   var $chats = $('#chats');
-  var $personalMessage = $('<p></p>');
-  $personalMessage.addClass('username roomname text');
-  // if room matches dropdown
+  var $post = $('<div id="post"</div>');
+
+  if (!message.roomname) {
+    message.roomname = 'lobby';
+  }
+
+  var $username, $message;
+
   for (var i = 0; i < message.length; i++) {
-    $chats.append('<p>' + message[i].username + ': ' + message[i].text + '</p>');
+    $username = $('<span class="username">' + message[i].username + '</span>');
+    $message = $('<br /><span>' + message[i].text + '</span><br />');  
+    $post.append($username);
+    $post.append($message);
+    $chats.append($post);
   }
 };
 
@@ -77,8 +94,9 @@ app.renderMessage = function (message) {
 // so you'll need to filter them somehow.
 
 app.renderRoom = function (room) {
+  var roomname = prompt('What room would you like to add?');
   var $roomSelect = $('#roomSelect');
-  $roomSelect.append('<option value=' + room + '>' + room + '</option>');
+  $roomSelect.append('<option value=' + roomname + '>' + roomname + '</option>');
   console.log('renderRoom ran');
 };
 
@@ -89,29 +107,20 @@ app.handleUsernameClick = function () {
   // add friend to clicked class
 };
 
-app.handleSubmit = function () {
+app.handleSubmit = function (event) {
   console.log('handleSubmit ran');
+  var $message = $('#message');
+  var message = {
+    username: app.username,
+    text: $message.val(),
+    roomname: app.roomname
+  };
+  console.log(message);
+  app.send(message);
 
-  // $('form').keypress(function(event) { 
-  //   return event.keyCode !== 13;
-  // }); 
+  event.preventDefault();
 };
-/*
 
-<div id="chats">
-  <div class="username message">
-    <p> Never underestimate the power of the Schwartz! </p>
-    <p clicked="false"> Mel brooks </p>
-  </div>
-</div>
-
-problems: 
-1. display message on screen in general
-
-2. wrting own message in chatterbox
-3. ^ upon clicking submit, prepend message
-
-*/ 
 
 
 
