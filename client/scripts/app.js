@@ -11,7 +11,7 @@ var app = {
 
 app.init = function () {
   app.username = window.location.search.substr(10);
-  $('#main').find('.username').on('click', app.handleUsernameClick);
+  $('#chats').on('click', '.username', app.handleUsernameClick);
   $('#send').on('submit', app.handleSubmit);
   $('form').submit(function(event) {
     
@@ -26,7 +26,6 @@ app.init = function () {
   // $('#addRoom').onclick(app.renderRoom(prompt('What room would you like to add?')));
   $('clearbutton').on('click', app.clearMessages(set));
 };
-
 
 app.send = function (message) {
   $.ajax({
@@ -52,7 +51,7 @@ app.fetch = function () {
   // This is the url you should use to communicate with the parse API server.
     url: app.server,
     type: 'GET',
-    data: { order: '-createdAt' },
+    data: { order: 'createdAt' },
     contentType: 'application/json',
     success: function (data) {
       app.renderMessage(data.results);
@@ -72,19 +71,23 @@ app.clearMessages = function (message) {
 
 app.renderMessage = function (message) {
   var $chats = $('#chats');
-  var $post = $('<div id="post"</div>');
+  var $post = $('<div class="chat"></div>');
 
   if (!message.roomname) {
     message.roomname = 'lobby';
   }
 
-  var $username, $message;
+  var $usernameMessage;
 
   for (var i = 0; i < message.length; i++) {
-    $username = $('<span class="username">' + message[i].username + '</span>');
-    $message = $('<br /><span>' + message[i].text + '</span><br />');  
-    $post.append($username);
-    $post.append($message);
+    $usernameMessage = $('<div class="username"><span>' + message[i].username 
+      + '</span> <span>' + message[i].text + '</span><br /></div>');
+    if (app.friends[message.username] === true) {
+      $username.addClass('friend');
+    }
+    //$message = $('<span>' + message[i].text + '</span><br /></div>');  
+    $post.append($usernameMessage);
+    //$post.append($message);
     $chats.append($post);
   }
 };
@@ -100,11 +103,19 @@ app.renderRoom = function (room) {
   console.log('renderRoom ran');
 };
 
-
-app.handleUsernameClick = function () {
+app.handleUsernameClick = function (event) {
   // if clicked, traverse dom to find clicked class
-
+  // $('#chats').on('click', 'username')
+  console.log('handleUsernameClick ran');
+  var friend = $(this).text();
+  // console.log($(this).username);
   // add friend to clicked class
+  if (friend !== undefined) {
+    app.friends[friend] = !app.friends[friend];  
+  }
+
+  // var selector = '[data-username"' + username.replace(/"/g, '\\\"') + '"]';
+  $(this).toggleClass('friend');
 };
 
 app.handleSubmit = function (event) {
@@ -115,7 +126,6 @@ app.handleSubmit = function (event) {
     text: $message.val(),
     roomname: app.roomname
   };
-  console.log(message);
   app.send(message);
 
   event.preventDefault();
