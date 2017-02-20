@@ -116,7 +116,7 @@ app.renderRoom = function (room) {
 app.handleUsernameClick = function (event) {
   // if clicked, traverse dom to find clicked class
   // $('#chats').on('click', 'username')
-  console.log('handleUsernameClick ran');
+  
   var friend = $(this).text();
   // console.log($(this).username);
   // add friend to clicked class
@@ -125,8 +125,13 @@ app.handleUsernameClick = function (event) {
   }
 
   // var selector = '[data-username"' + username.replace(/"/g, '\\\"') + '"]';
-  $(this).toggleClass('friend');
-  $(this).siblings().css('font-weight', 'bold');
+  $('.username').each(function () {
+    if (this.innerText === friend) {
+      $(this).toggleClass('friend');
+      $(this).siblings().css('font-weight', 'bold');
+    }
+  });
+ 
 };
 
 app.handleSubmit = function (event) {
