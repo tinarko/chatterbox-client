@@ -13,6 +13,7 @@ app.init = function () {
   app.username = window.location.search.substr(10);
   $('#chats').on('click', '.username', app.handleUsernameClick);
   $('#send').on('submit', app.handleSubmit);
+  $('#roomSelect').on('change', app.renderRoom);
   $('form').submit(function(event) {
     
   });
@@ -54,7 +55,11 @@ app.fetch = function () {
     data: { order: 'createdAt' },
     contentType: 'application/json',
     success: function (data) {
-      app.renderMessage(data.results);
+      var messages = data.results;
+      for (var i = 0; i < messages.length; i++) {
+        app.renderMessage(messages[i]);
+      }
+     
       set = data.results;
     },
     error: function (data) {
@@ -77,19 +82,20 @@ app.renderMessage = function (message) {
     message.roomname = 'lobby';
   }
 
-  var $usernameMessage;
+  var $username = '<div class="username">' + message.username + '</div>';
 
-  for (var i = 0; i < message.length; i++) {
-    $usernameMessage = $('<div class="username"><span>' + message[i].username 
-      + '</span> <span>' + message[i].text + '</span><br /></div>');
-    if (app.friends[message.username] === true) {
-      $username.addClass('friend');
-    }
-    //$message = $('<span>' + message[i].text + '</span><br /></div>');  
-    $post.append($usernameMessage);
-    //$post.append($message);
-    $chats.append($post);
+  if (app.friends[message.username] === true) {
+    $username.addClass('friend');
   }
+  $post.append($username);
+
+  var $message = '<span>' + message.text + '</span>';
+  $post.append($message);
+  
+    //$message = $('<span>' + message[i].text + '</span><br /></div>');  
+
+    //$post.append($message);
+  $chats.append($post);
 };
 
 // Allow users to create rooms and enter existing rooms - 
@@ -98,8 +104,12 @@ app.renderMessage = function (message) {
 
 app.renderRoom = function (room) {
   var roomname = prompt('What room would you like to add?');
+  if (roomname) {
+    app.roomname = roomname;
+    $roomSelect.append('<option value=' + roomname + '>' + roomname + '</option>');
+    
+  }
   var $roomSelect = $('#roomSelect');
-  $roomSelect.append('<option value=' + roomname + '>' + roomname + '</option>');
   console.log('renderRoom ran');
 };
 
@@ -116,6 +126,7 @@ app.handleUsernameClick = function (event) {
 
   // var selector = '[data-username"' + username.replace(/"/g, '\\\"') + '"]';
   $(this).toggleClass('friend');
+  $(this).siblings().css('font-weight', 'bold');
 };
 
 app.handleSubmit = function (event) {
