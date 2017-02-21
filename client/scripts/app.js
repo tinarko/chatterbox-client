@@ -10,6 +10,8 @@ var app = {
 };
 
 app.init = function () {
+
+
   app.username = window.location.search.substr(10);
   $('#chats').on('click', '.username', app.handleUsernameClick);
   $('#send').on('submit', app.handleSubmit);
@@ -33,6 +35,7 @@ app.init = function () {
 };
 
 app.send = function (message) {
+  $message = $('#message');
   $.ajax({
   // This is the url you should use to communicate with the parse API server.
     url: app.server,
@@ -40,6 +43,7 @@ app.send = function (message) {
     data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
+      $message.val('');
       console.log(data);
       app.fetch();
     },
@@ -59,6 +63,7 @@ app.fetch = function () {
     data: { order: '-createdAt' },
     contentType: 'application/json',
     success: function (data) {
+      console.dir(data);
       var messages = data.results;
       for (var i = 0; i < messages.length; i++) {
         app.renderMessage(messages[i]);
@@ -67,11 +72,11 @@ app.fetch = function () {
 
 
       var newMessage = data.results[data.results.length - 1];
-
-      if (newMessage.objectID !== app.lastMessageId) {
-        app.renderRoomList(data.results);
-        app.renderMessages(data.results);
+      if (newMessage.objectId !== app.lastMessageid) {
         app.lastMessageid = newMessage.objectId;
+        app.renderRoomList(app.messages);
+        app.renderMessages(app.messages);
+        
       }
      
       set = data.results;
@@ -99,22 +104,23 @@ app.renderMessages = function(messages) {
 };
 
 app.renderRoomList = function(messages) { 
-
+  console.log(messages);
   var $roomSelect = $('#roomSelect');
-  app.$roomSelect.html('option values="newRoom">New room...</option>');
-
+  $roomSelect.html('option value="newRoom">New room...</option>');
   if (messages) {
     var rooms = {};
     messages.forEach( function(message) {
-      var roomname = message.roomname;
+      var roomname = '<option>' + message.roomname + '</option>';
+      console.log(roomname);
       if (roomname && !rooms[roomname]) {
+        console.log('inside if statement' + roomname);
         app.renderRoom(roomname);
         rooms[roomname] = true;
       }
 
     }); 
   }
-  app.$roomSelect.val(app.roomname);
+  $roomSelect.val(app.roomname);
 };
 
 app.renderMessage = function (message) {
@@ -128,7 +134,7 @@ app.renderMessage = function (message) {
   var $username = '<div class="username">' + message.username + '</div>';
 
   if (app.friends[message.username] === true) {
-    $username.addClass('friend');
+    $('username').addClass('friend');
   }
   $post.append($username);
 
@@ -146,6 +152,7 @@ app.renderMessage = function (message) {
 // so you'll need to filter them somehow.
 
 app.renderRoom = function (room) {
+  console.log(room);
   var $roomSelect = $('#roomSelect');
   $roomSelect.append(room);
 };
@@ -153,7 +160,7 @@ app.renderRoom = function (room) {
 app.renderRoomChange = function(event) {
   var $roomSelect = $('#roomSelect');
   var selectIndex = $roomSelect.prop('selectedIndex');
-  if (selectIndex === 1) {
+  if (selectIndex === 0) {
     var roomname = prompt('What room would you like to add?');
     if (roomname) {
       app.roomname = roomname;
@@ -193,7 +200,7 @@ app.handleSubmit = function (event) {
   var message = {
     username: app.username,
     text: $message.val(),
-    roomname: app.roomname
+    roomname: app.roomname || 'lobby'
   };
   app.send(message);
 
