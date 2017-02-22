@@ -104,7 +104,7 @@ app.renderMessages = function(messages) {
 
 app.renderRoomList = function(messages) { 
   var $roomSelect = $('#roomSelect');
-  $roomSelect.html('option value="newRoom">New room...</option>');
+  $roomSelect.html('<option value="newRoom">New room...</option>');
   if (messages) {
     var rooms = {};
     messages.forEach( function(message) {
