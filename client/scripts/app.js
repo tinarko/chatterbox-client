@@ -30,7 +30,7 @@ app.init = function () {
 
   setInterval(function() {
     app.fetch(true);
-  }, 3000);
+  }, 10000);
   
 };
 
@@ -44,7 +44,6 @@ app.send = function (message) {
     contentType: 'application/json',
     success: function (data) {
       $message.val('');
-      console.log(data);
       app.fetch();
     },
     error: function (data) {
@@ -98,22 +97,19 @@ app.renderMessages = function(messages) {
   
   if (Array.isArray(messages)) {
     messages.filter(function(message) {
-      return message.roomname === app.roomname || app.roomname === 'lobby' && !message.roomname;
+      return message.roomname === app.roomname || (app.roomname === 'lobby' && !message.roomname);
     }).forEach(app.renderMessage);
   }
 };
 
 app.renderRoomList = function(messages) { 
-  console.log(messages);
   var $roomSelect = $('#roomSelect');
   $roomSelect.html('option value="newRoom">New room...</option>');
   if (messages) {
     var rooms = {};
     messages.forEach( function(message) {
       var roomname = '<option>' + message.roomname + '</option>';
-      console.log(roomname);
       if (roomname && !rooms[roomname]) {
-        console.log('inside if statement' + roomname);
         app.renderRoom(roomname);
         rooms[roomname] = true;
       }
@@ -152,23 +148,26 @@ app.renderMessage = function (message) {
 // so you'll need to filter them somehow.
 
 app.renderRoom = function (room) {
-  console.log(room);
   var $roomSelect = $('#roomSelect');
   $roomSelect.append(room);
 };
 
 app.renderRoomChange = function(event) {
   var $roomSelect = $('#roomSelect');
+  console.log("$roomSelect is = " + $roomSelect);
   var selectIndex = $roomSelect.prop('selectedIndex');
   if (selectIndex === 0) {
     var roomname = prompt('What room would you like to add?');
     if (roomname) {
+      console.log('IF fired! this is the new prompted roomname:' + roomname);
       app.roomname = roomname;
       app.renderRoom(roomname);
-      $roomSelect.val(roomname);
-    } else {
-      app.roomname = $roomSelect.val();
+      $roomSelect.val(roomname); 
     }
+  } else {
+    app.roomname = $roomSelect.val();
+    console.log("we are in the ELSE part where app.roomname = " + app.roomname);
+    
   }
   app.renderMessages(app.messages);
 };
@@ -178,7 +177,6 @@ app.handleUsernameClick = function (event) {
   // $('#chats').on('click', 'username')
   
   var friend = $(this).text();
-  // console.log($(this).username);
   // add friend to clicked class
   if (friend !== undefined) {
     app.friends[friend] = !app.friends[friend];  
@@ -195,7 +193,6 @@ app.handleUsernameClick = function (event) {
 };
 
 app.handleSubmit = function (event) {
-  console.log('handleSubmit ran');
   var $message = $('#message');
   var message = {
     username: app.username,
