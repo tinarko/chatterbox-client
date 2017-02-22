@@ -28,9 +28,9 @@ app.init = function () {
   $('clearbutton').on('click', app.clearMessages(set));
 
 
-  setInterval(function() {
-    app.fetch(true);
-  }, 10000);
+  // setInterval(function() {
+  //   app.fetch(true);
+  // }, 10000);
   
 };
 
@@ -149,24 +149,25 @@ app.renderMessage = function (message) {
 
 app.renderRoom = function (room) {
   var $roomSelect = $('#roomSelect');
-  $roomSelect.append(room);
+  console.log('before');
+  console.log($roomSelect);
+  $roomSelect.append('<option>' + room + '</option>');
+  console.log('after appending the NEW room');
+  console.log($roomSelect);
 };
 
 app.renderRoomChange = function(event) {
   var $roomSelect = $('#roomSelect');
-  console.log("$roomSelect is = " + $roomSelect);
   var selectIndex = $roomSelect.prop('selectedIndex');
   if (selectIndex === 0) {
     var roomname = prompt('What room would you like to add?');
     if (roomname) {
-      console.log('IF fired! this is the new prompted roomname:' + roomname);
       app.roomname = roomname;
       app.renderRoom(roomname);
       $roomSelect.val(roomname); 
     }
   } else {
     app.roomname = $roomSelect.val();
-    console.log("we are in the ELSE part where app.roomname = " + app.roomname);
     
   }
   app.renderMessages(app.messages);
